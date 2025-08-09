@@ -4,21 +4,27 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
   schedule:
-    - cron: "0 0 * * *" # runs daily at midnight UTC
-  workflow_dispatch: # lets you run manually
+    - cron: "0 0 * * *"  # still runs daily at midnight UTC
 
 jobs:
-  build:
+  generate:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # IMPORTANT for pushing to the output branch
     steps:
-      - name: Generate GitHub contribution snake
-        uses: Platane/snk/svg-only@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Generate GitHub Contribution Snake (Dark Theme)
+        uses: Platane/snk@v3
         with:
           github_user_name: ${{ github.repository_owner }}
-          outputs: dist/github-contribution-grid-snake.svg
-          palette: github-dark
-      - name: Push snake to the output branch
+          outputs: |
+            dist/github-contribution-grid-snake-dark.svg?color_snake=#00BFFF&color_dots=#161B22,#0E4429,#006D32,#26A641,#39D353
+
+      - name: Push Snake Animation to output branch
         uses: crazy-max/ghaction-github-pages@v3.1.0
         with:
           target_branch: output
